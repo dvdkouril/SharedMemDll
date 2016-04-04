@@ -1,6 +1,7 @@
 // SharedMemDll.h
 /*
-	This is just a testing class that I created when I was trying out DLL importing into Unity. it's based on this tutorial:
+	This is DLL that is imported into Unity and implements shared memory reading.
+	It's based on this tutorial:
 	http://ericeastwood.com/blog/17/unity-and-dlls-c-managed-and-c-unmanaged
 */
 
