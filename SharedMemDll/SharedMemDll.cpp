@@ -8,17 +8,59 @@
 
 #define BUF_SIZE 256
 TCHAR szName[] = TEXT("MyFileMappingObject");
+TCHAR camShMemName[] = TEXT("MayaToUnityCameraInfoSharedMem");
+TCHAR sceneInfoShMemName[] = TEXT("MayaToUnitySceneInfoSharedMem");
 
 #include "SharedMemDll.h"
 
-
 extern "C" {
-	// void prepareSharedMemory(out hMapFile, out pBuf) <- something like this? how will it work with c#????
-	//void prepareSharedMemory(_Out_ HANDLE _hMapFile, _Out_ LPCTSTR _pBuf)
-	char * prepareSharedMemory(_Out_ HANDLE _hMapFile)
+	void * getSceneObjNumber(HANDLE & _hShMem)
+	{
+		HANDLE hShMem;
+		void * pBuf;
+
+		hShMem = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, sceneInfoShMemName);
+
+		if (hShMem == NULL)
+		{
+			DWORD err = GetLastError();
+			_tprintf(TEXT("Could not open file mapping object (%d).\n"),
+				GetLastError());
+			return NULL;
+		}
+
+		pBuf = MapViewOfFile(hShMem, FILE_MAP_ALL_ACCESS, 0, 0, 0); // this can be actually 0 and then I don't need to send BUF_SIZE from maya to Unity
+
+		_hShMem = hShMem;
+		return pBuf;
+	}
+
+	void * getCameraInfoFromShMem(HANDLE & _hShMem) // I think this is how you make output parameter in C++, right?
+	{
+		HANDLE hShMem;
+		void * pBuf;
+
+		hShMem = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, camShMemName);
+
+		if (hShMem == NULL)
+		{
+			DWORD err = GetLastError();
+			_tprintf(TEXT("Could not open file mapping object (%d).\n"),
+				GetLastError());
+			return NULL;
+		}
+
+		pBuf = MapViewOfFile(hShMem, FILE_MAP_ALL_ACCESS, 0, 0,	BUF_SIZE); // this can be actually 0 and then I don't need to send BUF_SIZE from maya to Unity
+ 
+		_hShMem = hShMem;
+		return pBuf;
+
+	}
+
+	void * prepareSharedMemory(_Out_ HANDLE & _hMapFile)
 	{
 		HANDLE hMapFile;	// I need to output this
-		char* pBuf;		// and this
+		void* pBuf;		// and this
 
 		//MessageBox(NULL, TEXT("Whatup"), TEXT("Process2"), MB_OK);
 
@@ -36,28 +78,20 @@ extern "C" {
 		}
 
 		//pBuf = (LPTSTR)MapViewOfFile(hMapFile, // handle to map object
-		pBuf = (char *)MapViewOfFile(hMapFile, // handle to map object
+		pBuf = MapViewOfFile(hMapFile, // handle to map object
 			FILE_MAP_ALL_ACCESS,  // read/write permission
 			0,
 			0,
-			BUF_SIZE);
+			BUF_SIZE); // this can be actually 0 and then I don't need to send BUF_SIZE from maya to Unity
 
 
 		_hMapFile = hMapFile;
-
 		return pBuf;
-		//_pBuf = (LPCTSTR)pBuf;
 	}
 
-	void cleanupSharedMemory(HANDLE hMapFile, LPCTSTR pBuf)
+	void cleanupSharedMemory(HANDLE hMapFile, LPCVOID pBuf)
 	{
 		UnmapViewOfFile(pBuf);
-
 		CloseHandle(hMapFile);
-	}
-
-	void readSharedMemory(LPCTSTR pBuf)
-	{
-		MessageBox(NULL, pBuf, TEXT("Process2"), MB_OK);
 	}
 }

@@ -13,7 +13,9 @@
 
 extern "C" {
 	//SHAREDMEMDLL_API void prepareSharedMemory(_Out_ HANDLE _hMapFile, _Out_ LPCTSTR _pBuf);
-	SHAREDMEMDLL_API char * prepareSharedMemory(_Out_ HANDLE _hMapFile);
-	SHAREDMEMDLL_API void cleanupSharedMemory(HANDLE hMapFile, LPCTSTR pBuf);
-	SHAREDMEMDLL_API void readSharedMemory(LPCTSTR pBuf);
+	SHAREDMEMDLL_API void * getCameraInfoFromShMem(_Out_ HANDLE & _hShMem);
+	SHAREDMEMDLL_API void * getSceneObjNumber(_Out_ HANDLE & _hShMem);
+	SHAREDMEMDLL_API void * prepareSharedMemory(_Out_ HANDLE & _hMapFile);
+	SHAREDMEMDLL_API void cleanupSharedMemory(HANDLE hMapFile, LPCVOID pBuf);
+	//SHAREDMEMDLL_API void cleanupCameraSharedMemory(HANDLE hMapFile, LPCTSTR pBuf);
 }
