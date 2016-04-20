@@ -50,7 +50,7 @@ extern "C" {
 			return NULL;
 		}
 
-		pBuf = MapViewOfFile(hShMem, FILE_MAP_ALL_ACCESS, 0, 0,	BUF_SIZE); // this can be actually 0 and then I don't need to send BUF_SIZE from maya to Unity
+		pBuf = MapViewOfFile(hShMem, FILE_MAP_ALL_ACCESS, 0, 0,	0); // this can be actually 0 and then I don't need to send BUF_SIZE from maya to Unity
  
 		_hShMem = hShMem;
 		return pBuf;
@@ -82,7 +82,7 @@ extern "C" {
 			FILE_MAP_ALL_ACCESS,  // read/write permission
 			0,
 			0,
-			BUF_SIZE); // this can be actually 0 and then I don't need to send BUF_SIZE from maya to Unity
+			0); // this can be actually 0 and then I don't need to send BUF_SIZE from maya to Unity
 
 
 		_hMapFile = hMapFile;
